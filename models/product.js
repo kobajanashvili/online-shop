@@ -1,4 +1,4 @@
-
+const db = require('../util/database');
 
 const Cart = require('./cart');
 
@@ -20,10 +20,11 @@ module.exports = class Product {
     
   }
 
-  static fetchAll(cb) {
+  static fetchAll() {
+
   }
 
-  static findById(id, cb) {
+  static findById(id) {
     
   }
 };
