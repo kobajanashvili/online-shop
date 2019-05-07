@@ -34,7 +34,8 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
   const prodId = req.params.productId;
-  Product.findById(prodId, product => {
+  Product.findByPk(prodId)
+  .then( product => {
     if (!product) {
       return res.redirect("/");
     }
@@ -44,7 +45,8 @@ exports.getEditProduct = (req, res, next) => {
       editing: editMode,
       product: product
     });
-  });
+  })
+  .catch(err => console.log(err));
 };
 
 exports.postEditProduct = (req, res, next) => {
