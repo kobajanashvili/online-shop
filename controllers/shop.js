@@ -85,7 +85,12 @@ exports.postCart = (req, res, next) => {
       }
       let newQuantity = 1;
       if (product) {
-        // ...  gavagzeleb mere
+        const oldQuantity = product.cartItem.quantity;
+        newQuantity = oldQuantity + 1;
+        return fetchedCart.addProduct(product, {
+          through: { quantity: newQuantity }
+          //.....  aq unda gavagzelo
+        });
       }
       return Product.findByPk(prodId)
         .then(product => {
