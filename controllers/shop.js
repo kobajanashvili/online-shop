@@ -1,5 +1,5 @@
 const Product = require("../models/product");
-const Cart = require("../models/cart");
+const Order = require("../models/order");
 
 exports.getProducts = (req, res, next) => {
   Product.findAll()
@@ -77,14 +77,14 @@ exports.postCart = (req, res, next) => {
     .getCart()
     .then(cart => {
       fetchedCart = cart;
-      return cart.getProducts({where: {id: prodId}});
+      return cart.getProducts({ where: { id: prodId } });
     })
     .then(products => {
       let product;
       if (products.length > 0) {
         product = products[0];
       }
-      
+
       if (product) {
         const oldQuantity = product.cartItem.quantity;
         newQuantity = oldQuantity + 1;
@@ -98,7 +98,7 @@ exports.postCart = (req, res, next) => {
       });
     })
     .then(() => {
-      res.redirect('/cart');
+      res.redirect("/cart");
     })
     .catch(err => console.log(err));
 };
@@ -108,7 +108,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
   req.user
     .getCart()
     .then(cart => {
-      return cart.getProducts({ where: { id: prodId}});
+      return cart.getProducts({ where: { id: prodId } });
     })
     .then(products => {
       const product = products[0];
@@ -116,6 +116,31 @@ exports.postCartDeleteProduct = (req, res, next) => {
     })
     .then(result => {
       res.redirect("/cart");
+    })
+    .catch(err => console.log(err));
+};
+
+exports.postOrder = (req, res, next) => {
+  req.user
+    .getCart()
+    .then(cart => {
+      return cart.getProducts();
+    })
+    .then(products => {
+      return req.user
+        .createOrder()
+        .then(order => {
+          return order.addProducts(
+            products.map(product => {
+              product.orderItem = { quantity: product.cartItem.quantity };
+              return product;
+            })
+          );
+        })
+        .catch(err => console.log(err));
+    })
+    .then(result => {
+      res.redirect('/orders');
     })
     .catch(err => console.log(err));
 };
